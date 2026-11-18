@@ -1,0 +1,11 @@
+﻿# Code compilé par Maven
+target/
+
+# Fichiers des éditeurs
+.idea/
+*.iml
+.vscode/
+
+# Système
+.DS_Store
+Thumbs.db
