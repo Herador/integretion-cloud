@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  labels:
+    app: order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          image: herador/order-service:1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVICE_VERSION
+              value: "1"
+            # Appel REST vers l'autre microservice : on utilise le nom
+            # du Service Kubernetes, résolu par le DNS interne du cluster
+            - name: CATALOG_URL
+              value: "http://catalog-service:8080"
+          # Le Pod ne reçoit du trafic qu'une fois Spring Boot prêt
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          # Si le service ne répond plus, Kubernetes redémarre le conteneur
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

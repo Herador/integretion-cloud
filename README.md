@@ -22,11 +22,12 @@ Application simple de gestion de commandes, composée de 2 microservices Java (S
 
 | Étape | Contenu | Statut |
 |---|---|---|
-| 1 (10/20) | catalog-service : Docker, Docker Hub, Deployment, Service | fait |
-| 2 (12/20) | Gateway Ingress | à faire |
-| 3 (14/20) | order-service : appel REST vers catalog-service + événements RabbitMQ | à faire |
-| 4 (16/20) | Base de données | à faire |
-| 5 (18/20) | Sécurité (RBAC, etc.) | à faire |
+| Étape 1 | catalog-service : Docker, Docker Hub, Deployment, Service | fait |
+| Étape 2 | Gateway Ingress | à faire |
+| Étape 3 | order-service : appel REST vers catalog-service | fait |
+| Étape 3 bis | Événements RabbitMQ entre order-service et catalog-service | à faire |
+| Étape 4 | Base de données | à faire |
+| Étape 5 | Sécurité (RBAC, etc.) | à faire |
 
 ## catalog-service
 
@@ -58,4 +59,30 @@ kubectl apply -f k8s/catalog-deployment.yml
 kubectl apply -f k8s/catalog-service.yml
 kubectl get pods
 minikube service catalog-service --url
+```
+
+## order-service
+
+API REST (port 8080). Avant d'enregistrer une commande, order-service appelle `GET /products/{id}` sur catalog-service. L'adresse de catalog-service est fournie par la variable d'environnement `CATALOG_URL`.
+
+| Méthode | Route | Rôle |
+|---|---|---|
+| GET | / | nom du service, version, nom du Pod |
+| GET | /orders | liste des commandes |
+| GET | /orders/{id} | une commande |
+| POST | /orders | créer une commande `{"productId": 1, "quantity": 2}` |
+| GET | /actuator/health | état du service (sondes Kubernetes) |
+
+Réponses de `POST /orders` : `201` commande créée, `400` requête invalide, `404` produit inconnu, `409` stock insuffisant, `503` catalog-service injoignable.
+
+### Docker et Kubernetes
+
+```
+cd order-service
+docker build -t herador/order-service:1 .
+docker push herador/order-service:1
+cd ..
+kubectl apply -f k8s/order-deployment.yml
+kubectl apply -f k8s/order-service.yml
+minikube service order-service --url
 ```
