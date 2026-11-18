@@ -1,0 +1,5 @@
+# Fins de ligne LF dans le depot (scripts executes sous Linux par la CI et Docker)
+* text=auto eol=lf
+# Scripts Windows en CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
