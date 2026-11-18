@@ -1,0 +1,26 @@
+# Environnement local complet : les deux services, sans Kubernetes.
+# Utilisé par : py scripts/course.py compose-up / smoke / compose-down
+# Ports côté PC modifiables avec les variables CATALOG_PORT et ORDER_PORT
+services:
+  catalog-service:
+    build: ./catalog-service
+    image: herador/catalog-service:local
+    ports:
+      - "${CATALOG_PORT:-18081}:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  order-service:
+    build: ./order-service
+    image: herador/order-service:local
+    ports:
+      - "${ORDER_PORT:-18082}:8080"
+    environment:
+      # Dans le réseau Docker Compose, le nom du service sert de nom d'hôte
+      CATALOG_URL: http://catalog-service:8080
+    depends_on:
+      catalog-service:
+        condition: service_healthy
