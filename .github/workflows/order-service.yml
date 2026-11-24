@@ -44,6 +44,16 @@ jobs:
       - name: Tests JUnit
         run: ./mvnw -B test
 
+      # Rapports Surefire (XML JUnit), téléversés même si les tests échouent
+      - name: Rapports de tests
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: order-test-reports
+          path: order-service/target/surefire-reports/
+          retention-days: 7
+          if-no-files-found: warn
+
   quality:
     name: Order quality
     runs-on: ubuntu-latest
@@ -60,6 +70,16 @@ jobs:
 
       - name: Checkstyle
         run: ./mvnw -B checkstyle:check
+
+      # Rapport Checkstyle (XML), téléversé même si des violations sont trouvées
+      - name: Rapport Checkstyle
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: order-checkstyle-report
+          path: order-service/target/checkstyle-result.xml
+          retention-days: 7
+          if-no-files-found: warn
 
   image:
     name: Order Docker image
