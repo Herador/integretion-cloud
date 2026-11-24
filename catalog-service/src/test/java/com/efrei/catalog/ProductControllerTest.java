@@ -30,7 +30,7 @@ class ProductControllerTest {
     void listeDesProduits() throws Exception {
         mockMvc.perform(get("/products"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Clavier"));
+                .andExpect(jsonPath("$[0].name").value("Clavier-FAUX"));
     }
 
     @Test
