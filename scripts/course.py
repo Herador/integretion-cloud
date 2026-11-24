@@ -77,6 +77,34 @@ def test():
     test_order()
 
 
+# ---------- Qualité ----------
+
+def lint_catalog():
+    mvnw("catalog", "checkstyle:check")
+
+
+def lint_order():
+    mvnw("order", "checkstyle:check")
+
+
+def lint():
+    lint_catalog()
+    lint_order()
+
+
+# ---------- Portes locales : tests puis qualité ----------
+
+def verify():
+    """Reproduit les portes tests et qualité de la CI.
+
+    Ne construit pas les images, ne lance pas Gitleaks et ne publie aucun rapport :
+    ces responsabilités restent dans GitHub Actions.
+    """
+    test()
+    lint()
+    print("\nverify : tests et qualité OK")
+
+
 # ---------- Docker Compose ----------
 
 def compose_up():
@@ -150,6 +178,10 @@ COMMANDS = {
     "test-catalog": test_catalog,
     "test-order": test_order,
     "test": test,
+    "lint-catalog": lint_catalog,
+    "lint-order": lint_order,
+    "lint": lint,
+    "verify": verify,
     "compose-up": compose_up,
     "compose-down": compose_down,
     "smoke": smoke,

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!--
+  Configuration Checkstyle partagée par catalog-service et order-service.
+  Volontairement minimale : chaque règle correspond à un risque concret.
+-->
+<module name="Checker">
+    <property name="charset" value="UTF-8"/>
+    <property name="severity" value="error"/>
+    <property name="fileExtensions" value="java"/>
+
+    <!-- Lignes trop longues : difficiles à relire dans une revue de code -->
+    <module name="LineLength">
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="^(package|import) "/>
+    </module>
+
+    <!-- Permet une exception locale et justifiée :
+         @SuppressWarnings("checkstyle:NomDeLaRegle") au lieu de désactiver la règle partout -->
+    <module name="SuppressWarningsFilter"/>
+
+    <module name="TreeWalker">
+        <module name="SuppressWarningsHolder"/>
+
+        <!-- Imports inutilisés ou redondants : bruit, dépendances trompeuses -->
+        <module name="UnusedImports"/>
+        <module name="RedundantImport"/>
+        <module name="AvoidStarImport"/>
+
+        <!-- Accolades obligatoires : évite le "if" dont la 2e ligne n'est pas protégée -->
+        <module name="NeedBraces"/>
+
+        <!-- Instruction vide (";" seul) : souvent un bug, par exemple "if (x);" -->
+        <module name="EmptyStatement"/>
+    </module>
+</module>

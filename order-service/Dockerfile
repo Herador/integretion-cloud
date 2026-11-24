@@ -8,9 +8,12 @@ WORKDIR /build
 COPY pom.xml .
 RUN mvn -B dependency:go-offline
 
-# Puis on compile, on lance les tests et on produit target/app.jar
+# Puis on compile, on lance les tests et on produit target/app.jar.
+# En CI, SKIP_TESTS=true : les tests ont déjà tourné dans le job "tests".
+# En local, la valeur par défaut (false) garde les tests dans le build.
 COPY src ./src
-RUN mvn -B package
+ARG SKIP_TESTS=false
+RUN mvn -B package -DskipTests=${SKIP_TESTS}
 
 # ---- Étape 2 : exécution ----
 # Image légère avec seulement le JRE (pas Maven, pas le code source).
