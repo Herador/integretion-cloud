@@ -4,12 +4,17 @@
 #                    ├──> Order Docker image
 #   Order quality ──┘
 #
-# Pas de filtre "paths" : les contrôles requis doivent exister sur toutes les PR.
+# Pas de filtre "paths" sur pull_request : les contrôles requis doivent exister sur toutes les PR.
+# Filtre "paths" sur push vers main : un service non modifié n'est pas reconstruit ni republié.
 name: order-service
 
 on:
   push:
     branches: [main]
+    paths:
+      - "order-service/**"
+      - "config/checkstyle/**"
+      - ".github/workflows/order-service.yml"
   pull_request:
 
 # Permissions minimales du GITHUB_TOKEN : lecture du code uniquement

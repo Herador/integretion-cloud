@@ -4,12 +4,17 @@
 #                    ├──> Catalog Docker image
 #   Catalog quality ──┘
 #
-# Pas de filtre "paths" : les contrôles requis doivent exister sur toutes les PR.
+# Pas de filtre "paths" sur pull_request : les contrôles requis doivent exister sur toutes les PR.
+# Filtre "paths" sur push vers main : un service non modifié n'est pas reconstruit ni republié.
 name: catalog-service
 
 on:
   push:
     branches: [main]
+    paths:
+      - "catalog-service/**"
+      - "config/checkstyle/**"
+      - ".github/workflows/catalog-service.yml"
   pull_request:
 
 # Permissions minimales du GITHUB_TOKEN : lecture du code uniquement
